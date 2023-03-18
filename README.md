@@ -34,9 +34,13 @@ Returns historical stock or forex data.
 
     curl 'http://127.0.0.1:5000/data?symbol=AAPL&interval=1d&start=2023-02-01&end=2023-03-01'
 
+    curl 'https://flask-production-930b.up.railway.app/data?symbol=AAPL&interval=1d&start=2023-02-01&end=2023-03-01'
+
 ##### Forex (FRED)
 
     curl 'http://127.0.0.1:5000/data?symbol=DEXUSEU&interval=1d&start=2023-02-01&end=2023-03-01'
+
+    curl 'https://flask-production-930b.up.railway.app/data?symbol=DEXUSEU&interval=1d&start=2023-02-01&end=2023-03-01'
 
 ### /backtest
 
@@ -47,11 +51,14 @@ Backtests a simple moving average crossover trading strategy on the given stock 
 ##### Stock
 
     curl 'http://127.0.0.1:5000/backtest?strategy=sma_crossover&symbol=MSFT&interval=1d&start=2021-01-01&end=2021-12-31&sma_short_period=10&sma_long_period=30'
-    
+
+    curl 'https://flask-production-930b.up.railway.app/backtest?strategy=sma_crossover&symbol=MSFT&interval=1d&start=2021-01-01&end=2021-12-31&sma_short_period=10&sma_long_period=30'
 
 ##### Forex (FRED)
 
     curl 'http://127.0.0.1:5000/backtest?strategy=sma_crossover&symbol=DEXUSEU&interval=1d&start=2023-02-01&end=2023-03-01&sma_short_period=50&sma_long_period=200'
+
+    curl 'https://flask-production-930b.up.railway.app/backtest?strategy=sma_crossover&symbol=DEXUSEU&interval=1d&start=2023-02-01&end=2023-03-01&sma_short_period=50&sma_long_period=200'
 
 
 ## Notes
