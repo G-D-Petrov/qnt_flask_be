@@ -40,8 +40,8 @@ def get_stock_data(ticker, interval, start, end):
     stock_data = yf.download(ticker, start=start, end=end, interval=interval)
     return stock_data
 
-def calculate_sma(data, period):
-    return data['Close'].rolling(window=period).mean()
+def calculate_sma(data, period, price_column='Close'):
+    return data[price_column].rolling(window=period).mean()
 
 def sma_crossover_strategy(data, sma_short, sma_long):
     signal = 0
@@ -117,17 +117,24 @@ def backtest():
 
     is_forex = '/' in symbol
     is_fred_forex = symbol.startswith('DEX')
-
+    market = "stocks"
     if is_forex and not is_fred_forex:
         data = get_forex_data(symbol, interval, start, end)
+        market == "forex"
     elif is_fred_forex:
         data = get_forex_data_fred(symbol, start, end)
+        market == "forex"
     else:
         data = get_stock_data(symbol, interval, start, end)
 
     if strategy == 'sma_crossover':
-        data['sma_short'] = calculate_sma(data, sma_short_period)
-        data['sma_long'] = calculate_sma(data, sma_long_period)
+        if market == "forex":
+            price_column = "PRICE"
+        else:
+            price_column = "Close"
+
+        data['sma_short'] = calculate_sma(data, sma_short_period, price_column)
+        data['sma_long'] = calculate_sma(data, sma_long_period, price_column)
         trades = sma_crossover_strategy(data, data['sma_short'], data['sma_long'])
         profitability = calculate_profitability([(data['Close'][buy], data['Close'][sell]) for buy, sell in trades])
 
@@ -145,6 +152,23 @@ def backtest():
         return jsonify(response)
     else:
         return jsonify({'error': 'Invalid strategy'}), 400
+
+@app.route('/')
+def index():
+    instructions = '''
+    <h1>Welcome to the Stock and Forex Backtesting API!</h1>
+    <p>Use one of the following routes to access the API functionalities:</p>
+    <ul>
+        <li>
+            <b>Stock Backtesting:</b> /backtest?strategy=[strategy]&symbol=[symbol]&interval=[interval]&start=[start_date]&end=[end_date]&sma_short_period=[short_period]&sma_long_period=[long_period]
+        </li>
+        <li>
+            <b>Forex Backtesting:</b> /backtest?market=forex&strategy=[strategy]&symbol=[symbol]&interval=[interval]&start=[start_date]&end=[end_date]&sma_short_period=[short_period]&sma_long_period=[long_period]
+        </li>
+    </ul>
+    <p>Replace the values inside the square brackets with the appropriate values for each parameter.</p>
+    '''
+    return instructions
 
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5000))
